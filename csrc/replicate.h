@@ -2,7 +2,7 @@
 #define CUB_WRAPPED_NAMESPACE megablocks
 
 #include <cstdint>
-
+#include "cuda_compat.h"
 #include <cub/cub.cuh>
 #include <c10/util/Half.h>
 #include <c10/cuda/CUDAStream.h>
@@ -37,11 +37,11 @@ __global__ void __launch_bounds__(kThreadsPerBlock)
   // Load the start/end for this bin.
   int bin_idx = blockIdx.x;
   int start = 0;
-  if (bin_idx > 0) start = __ldg(bins + bin_idx - 1);
-  int end = __ldg(bins + bin_idx);
+  if (bin_idx > 0) start = VLLM_LDG(bins + bin_idx - 1);
+  int end = VLLM_LDG(bins + bin_idx);
 
   // Load the value to replicate.
-  T value = __ldg((T*)x + bin_idx);
+  T value = VLLM_LDG((T*)x + bin_idx);
 
   // Offset to this threadblocks bin and this threads
   // offset within the bin.

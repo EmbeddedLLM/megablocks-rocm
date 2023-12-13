@@ -1,3 +1,4 @@
+#include "cuda_compat.h"
 #include <cstdint>
 #include <c10/util/Half.h>
 #include <torch/extension.h>
@@ -25,8 +26,8 @@ __global__ void __launch_bounds__(kThreadsPerBlock)
 			 const int * __restrict__ padded_bins) {
   // Load the offset for this bins indices.
   int start = 0;
-  if (blockIdx.x > 0) start = __ldg(padded_bins + blockIdx.x - 1);
-  int end = __ldg(padded_bins + blockIdx.x);
+  if (blockIdx.x > 0) start = VLLM_LDG(padded_bins + blockIdx.x - 1);
+  int end = VLLM_LDG(padded_bins + blockIdx.x);
 
   // Divide the start and end into blocks.
   start /= block_size;

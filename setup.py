@@ -11,13 +11,13 @@ else:
     device_capability = f"{device_capability[0]}{device_capability[1]}"
 
 nvcc_flags = [
-    "--ptxas-options=-v",
+    # "--ptxas-options=-v",
     "--optimize=2",
 ]
-if device_capability:
-    nvcc_flags.append(
-        f"--generate-code=arch=compute_{device_capability},code=sm_{device_capability}"
-    )
+# if device_capability:
+#     nvcc_flags.append(
+#         # f"--generate-code=arch=compute_{device_capability},code=sm_{device_capability}"
+#     )
 
 ext_modules = [
     CUDAExtension(
@@ -35,9 +35,9 @@ install_requires=[
 
 extra_deps = {}
 
-extra_deps["gg"] = [
-    "grouped_gemm",
-]
+# extra_deps["gg"] = [
+#     "grouped_gemm",
+# ]
 
 extra_deps["quant"] = [
     "mosaicml-turbo==0.0.4",

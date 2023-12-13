@@ -1,6 +1,7 @@
 #ifndef BLOCKPARTY_CSRC_CUDA_UTIL_H_
 #define BLOCKPARTY_CSRC_CUDA_UTIL_H_
 
+#include "cuda_compat.h"
 #include <cuda_fp16.h>
 #include <cuda_runtime.h>
 #include <torch/extension.h>
@@ -31,16 +32,16 @@ __device__ __forceinline__ void Store(const T& value, T* ptr) {
 
 template <typename T>
 __device__ __forceinline__ T Load(const T* address) {
-  return __ldg(address);
+  return VLLM_LDG(address);
 }
 
 __device__ __forceinline__ half4 Load(const half4* address) {
-  float2 x = __ldg(reinterpret_cast<const float2*>(address));
+  float2 x = VLLM_LDG(reinterpret_cast<const float2*>(address));
   return BitCast<half4>(x);
 }
 
 __device__ __forceinline__ half8 Load(const half8* address) {
-  float4 x = __ldg(reinterpret_cast<const float4*>(address));
+  float4 x = VLLM_LDG(reinterpret_cast<const float4*>(address));
   return BitCast<half8>(x);
 }
 

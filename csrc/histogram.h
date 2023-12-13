@@ -7,7 +7,7 @@
 #include <c10/cuda/CUDAStream.h>
 #include <torch/extension.h>
 
-#define CUDA_CALL(code)					    \
+#define GPU_CALL(code)					    \
   do {                                                      \
     cudaError_t status = code;                              \
     std::string err = cudaGetErrorString(status);           \
@@ -29,7 +29,7 @@ torch::Tensor cub_histogram(torch::Tensor x, int num_bins) {
 
   // Get scratchpad size.
   size_t scratchpad_bytes = 0;
-  CUDA_CALL(cub::DeviceHistogram::HistogramEven(nullptr,
+  GPU_CALL(hipcub::DeviceHistogram::HistogramEven(nullptr,
 						scratchpad_bytes,
 						x.data_ptr<T>(),
 						out.data_ptr<int>(),
@@ -45,7 +45,7 @@ torch::Tensor cub_histogram(torch::Tensor x, int num_bins) {
 
   // Run the kernel.
   for (int i = 0; i < x.size(0); ++i) {
-    CUDA_CALL(cub::DeviceHistogram::HistogramEven(scratchpad.data_ptr(),
+    GPU_CALL(hipcub::DeviceHistogram::HistogramEven(scratchpad.data_ptr(),
 						  scratchpad_bytes,
 						  x.data_ptr<T>() + x.size(1) * i,
 						  out.data_ptr<int>() + out.size(1) * i,
@@ -82,5 +82,5 @@ torch::Tensor histogram(torch::Tensor x, int num_bins) {
 
 }  // namespace megablocks
 
-#undef CUDA_CALL
+#undef GPU_CALL
 #undef CUB_WRAPPED_NAMESPACE
